@@ -1,6 +1,7 @@
 ﻿using CodingTracker.Niasua.Data;
 using CodingTracker.Niasua.Models;
 using CodingTracker.Niasua.UI;
+using CodingTracker.Niasua.UserInput;
 using Spectre.Console;
 using SQLitePCL;
 
@@ -29,13 +30,25 @@ while (!exit)
     switch (choice)
     {
         case "View all sessions":
+
             var sessions = CodingController.GetAllSessions();
+
             TableDisplay.ShowSessions(sessions);
+
             break;
+
         case "Add new session":
+
+            var session = UserInputHandler.GetCodingSessionFromUser();
+
+            CodingController.InsertSession(session);
+
             break;
+
         case "Exit":
+
             exit = true;
+
             break;
     }
 }
