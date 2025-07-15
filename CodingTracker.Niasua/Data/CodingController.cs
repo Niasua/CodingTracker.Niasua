@@ -21,4 +21,27 @@ internal static class CodingController
 
         connection.Execute(tableQuery);
     }
+
+    public static void InsertSession(CodingSession session)
+    {
+        session.CalculateDuration();
+
+        using var connection = new SqliteConnection(AppConfig.GetConnectionString());
+
+        var insertQuery = @"INSERT INTO coding_sessions (StartTime, EndTime, DurationHours)
+                            VALUES (@StartTime, @EndTime, @DurationHours);";
+
+        connection.Execute(insertQuery, session);
+    }
+
+    public static List<CodingSession> GetAllSessions()
+    {
+        using var connection = new SqliteConnection(AppConfig.GetConnectionString());
+
+        var query = "SELECT * FROM coding_sessions";
+
+        var sessions = connection.Query<CodingSession>(query).ToList();
+
+        return sessions;
+    }
 }
