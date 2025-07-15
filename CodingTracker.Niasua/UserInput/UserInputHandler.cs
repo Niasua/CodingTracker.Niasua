@@ -16,7 +16,7 @@ internal static class UserInputHandler
         Console.WriteLine($"Please enter the end date and time ({DateTimeFormat}):");
         DateTime endTime = ReadValidDateTime();
 
-        while (endTime <= startTime)
+        while (!Validator.IsValidSessionTimes(startTime, endTime))
         {
             Console.WriteLine("End time must be AFTER start time. Please enter a valid end date and time:");
             endTime = ReadValidDateTime();
@@ -31,10 +31,18 @@ internal static class UserInputHandler
 
     public static int GetSessionId()
     {
-        Console.WriteLine($"What's the Session ID you want to delete?: ");
-        var id = Console.ReadLine();
+        while (true)
+        {
+            Console.WriteLine($"What's the Session ID you want to delete?: ");
+            string input = Console.ReadLine();
 
-        return int.Parse(id);
+            if (Validator.IsValidInt(input, out int id))
+            {
+                return id;
+            }
+
+            AnsiConsole.MarkupLine("[red]Please enter a valid numeric ID.[/]"); 
+        }
     }
 
     private static DateTime ReadValidDateTime()
@@ -43,14 +51,12 @@ internal static class UserInputHandler
         {
             string input = Console.ReadLine();
 
-            if(DateTime.TryParseExact(input, DateTimeFormat, null, System.Globalization.DateTimeStyles.None, out DateTime parsedDate))
+            if (Validator.IsValidDateTime(input, DateTimeFormat, out DateTime parsedDate))
             {
                 return parsedDate;
             }
-            else
-            {
-                Console.WriteLine($"Invalid date/time format. Please use the format: {DateTimeFormat}");
-            }
+
+            AnsiConsole.MarkupLine($"[red]Invalid date/time format. Please use the format: {DateTimeFormat}[/]");
         }
     }
 }
