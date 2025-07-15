@@ -1,5 +1,6 @@
 ﻿using System;
 using CodingTracker.Niasua.Models;
+using Spectre.Console;
 
 namespace CodingTracker.Niasua.UserInput;
 
@@ -26,6 +27,14 @@ internal static class UserInputHandler
             StartTime = startTime,
             EndTime = endTime
         };
+    }
+
+    public static int GetSessionId()
+    {
+        Console.WriteLine($"What's the Session ID you want to delete?: ");
+        var id = Console.ReadLine();
+
+        return int.Parse(id);
     }
 
     private static DateTime ReadValidDateTime()

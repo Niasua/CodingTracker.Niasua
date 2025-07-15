@@ -44,4 +44,26 @@ internal static class CodingController
 
         return sessions;
     }
+
+    public static void DeleteSession(CodingSession session)
+    {
+        using var connection = new SqliteConnection(AppConfig.GetConnectionString());
+
+        var deleteQuery = @"DELETE FROM coding_sessions
+                            WHERE Id = @Id;";
+
+        connection.Execute(deleteQuery, session);
+    }
+
+    public static CodingSession GetSessionById(int id)
+    {
+        using var connection = new SqliteConnection(AppConfig.GetConnectionString());
+
+        var query = @"SELECT * FROM coding_sessions
+                      WHERE Id = @Id;";
+
+        var session = connection.QuerySingleOrDefault<CodingSession>(query, new {Id = id});
+
+        return session;
+    }
 }

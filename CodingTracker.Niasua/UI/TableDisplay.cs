@@ -25,8 +25,6 @@ namespace CodingTracker.Niasua.UI
             }
 
             AnsiConsole.Write(table);
-            AnsiConsole.MarkupLine("[grey]Pres any key to continue...[/]");
-            Console.ReadKey();
         }
     }
 }

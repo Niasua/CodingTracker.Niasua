@@ -15,7 +15,7 @@ while (!exit)
 {
     Console.Clear();
     AnsiConsole.MarkupLine("[bold blue]Coding Tracker[/]");
-    AnsiConsole.MarkupLine("Select an option:\n");
+    AnsiConsole.MarkupLine("\nSelect an option:\n");
 
     var choice = AnsiConsole.Prompt(
         new SelectionPrompt<string>()
@@ -24,6 +24,7 @@ while (!exit)
         {
             "View all sessions",
             "Add new session",
+            "Delete session",
             "Exit"
         }));
 
@@ -32,16 +33,21 @@ while (!exit)
         case "View all sessions":
 
             var sessions = CodingController.GetAllSessions();
-
-            TableDisplay.ShowSessions(sessions);
+            ViewAllSessions(sessions);
 
             break;
 
         case "Add new session":
 
             var session = UserInputHandler.GetCodingSessionFromUser();
+            AddSession(session);
 
-            CodingController.InsertSession(session);
+            break;
+
+        case "Delete session":
+
+            sessions = CodingController.GetAllSessions();
+            DeleteSession(sessions);
 
             break;
 
@@ -51,4 +57,46 @@ while (!exit)
 
             break;
     }
+}
+
+static void ViewAllSessions(List<CodingSession> sessions)
+{
+    TableDisplay.ShowSessions(sessions);
+
+    Pause();
+}
+
+static void AddSession(CodingSession session)
+{
+    CodingController.InsertSession(session);
+
+    AnsiConsole.MarkupLine("\n[green]Session successfully added.[/]\n");
+    Pause();
+}
+
+static void DeleteSession(List<CodingSession> sessions)
+{
+    TableDisplay.ShowSessions(sessions);
+
+    
+    var id = UserInputHandler.GetSessionId();
+    var sessionToDelete = CodingController.GetSessionById(id);
+
+    if (sessionToDelete is null)
+    {
+        AnsiConsole.MarkupLine("[red]That session doesn't exist.[/]");
+        Pause();
+        return;
+    }
+
+    CodingController.DeleteSession(sessionToDelete);
+
+    AnsiConsole.MarkupLine("\n[green]Session successfully deleted.[/]\n");
+    Pause();
+}
+
+static void Pause()
+{
+    AnsiConsole.MarkupLine("\n[grey]Press any key to continue...[/]");
+    Console.ReadKey();
 }
