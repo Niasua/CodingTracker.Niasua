@@ -56,7 +56,8 @@ internal static class UserInputHandler
                 return parsedDate;
             }
 
-            AnsiConsole.MarkupLine($"[red]Invalid date/time format. Please use the format: {DateTimeFormat}[/]");
+            AnsiConsole.MarkupLine($"\n[red]Invalid date/time format. Please use the format: {DateTimeFormat}[/]");
+            AnsiConsole.MarkupLine($"\nPlease enter the start date and time ({DateTimeFormat}):");
         }
     }
 }
