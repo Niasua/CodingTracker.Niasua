@@ -1,16 +1,17 @@
-﻿using Dapper;
-using Microsoft.Data.Sqlite;
+﻿using CodingTracker.Niasua.Configuration;
 using CodingTracker.Niasua.Models;
-using CodingTracker.Niasua.Configuration;
-using System.ComponentModel.DataAnnotations;
 using CodingTracker.Niasua.UserInput;
+using Dapper;
+using Microsoft.Data.Sqlite;
+using System;
+using System.ComponentModel.DataAnnotations;
 
 
 namespace CodingTracker.Niasua.Data;
 
 internal static class CodingController
 {
-    public static void InitializeDatabase()
+    public static void InitializeDatabases()
     {
         using var connection = new SqliteConnection(AppConfig.GetConnectionString());
 
@@ -21,7 +22,16 @@ internal static class CodingController
                             DurationHours REAL NOT NULL
                         );";
 
+        var goalTable = @"
+                        CREATE TABLE IF NOT EXISTS coding_goals (
+                            Id INTEGER PRIMARY KEY AUTOINCREMENT,
+                            TargetHours REAL NOT NULL,
+                            Deadline TEXT NOT NULL
+                        );
+        ";
+
         connection.Execute(tableQuery);
+        connection.Execute(goalTable);
     }
 
     public static List<CodingSession> GetAllSessions()
@@ -166,5 +176,53 @@ internal static class CodingController
         var results = connection.Query<CodingSummary>(query).ToList();
 
         return results;
+    }
+
+    public static void InsertGoal(CodingGoal goal)
+    {
+        using var connection = new SqliteConnection(AppConfig.GetConnectionString());
+
+        var insertQuery = @"INSERT INTO coding_goals (TargetHours, Deadline)
+                            VALUES (@TargetHours, @Deadline);";
+
+        var parameters = new
+        {
+            goal.TargetHours,
+            Deadline = goal.Deadline.ToString("yyyy-MM-dd HH:mm")
+        };
+
+        connection.Execute(insertQuery, parameters);
+    }
+
+    public static void ShowGoalProgress()
+    {
+        using var connection = new SqliteConnection(AppConfig.GetConnectionString());
+
+        var goal = connection.QueryFirstOrDefault<CodingGoal>("SELECT * FROM coding_goals ORDER BY Id DESC LIMIT 1");
+
+        if (goal == null)
+        {
+            Console.WriteLine("No coding goal found.");
+            return;
+        }
+
+        var totalHours = connection.ExecuteScalar<double>(
+            "SELECT SUM(DurationHours) FROM coding_sessions WHERE StartTime <= @Deadline",
+            new { Deadline = goal.Deadline.ToString("yyyy-MM-dd HH-mm") });
+
+        var remaining = goal.TargetHours - totalHours;
+        var daysLeft = (goal.Deadline - DateTime.Now).TotalDays;
+        var hoursPerDay = daysLeft > 0 ? remaining / daysLeft : remaining;
+
+        Console.WriteLine($"\nGoal: {goal.TargetHours} hrs by {goal.Deadline:dd-MM-yyyy}");
+        Console.WriteLine($"You’ve coded: {totalHours:0.##} hrs");
+        Console.WriteLine($"Remaining: {remaining:0.##} hrs");
+
+        if (remaining <= 0)
+            Console.WriteLine("Goal reached!");
+        else if (daysLeft > 0)
+            Console.WriteLine($"You need to code ~{hoursPerDay:0.##} hrs/day to reach your goal.");
+        else
+            Console.WriteLine("Deadline passed!");
     }
 }
