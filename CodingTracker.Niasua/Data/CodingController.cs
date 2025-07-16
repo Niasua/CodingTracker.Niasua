@@ -22,6 +22,17 @@ internal static class CodingController
         connection.Execute(tableQuery);
     }
 
+    public static List<CodingSession> GetAllSessions()
+    {
+        using var connection = new SqliteConnection(AppConfig.GetConnectionString());
+
+        var query = "SELECT * FROM coding_sessions";
+
+        var sessions = connection.Query<CodingSession>(query).ToList();
+
+        return sessions;
+    }
+
     public static void InsertSession(CodingSession session)
     {
         session.CalculateDuration();
@@ -34,15 +45,20 @@ internal static class CodingController
         connection.Execute(insertQuery, session);
     }
 
-    public static List<CodingSession> GetAllSessions()
+    public static void UpdateSession(CodingSession session)
     {
+        session.CalculateDuration();
+        
         using var connection = new SqliteConnection(AppConfig.GetConnectionString());
 
-        var query = "SELECT * FROM coding_sessions";
+        var updateQuery = @"UPDATE coding_sessions
+                            SET 
+                                StartTime = @StartTime,
+                                EndTime = @EndTime,
+                                DurationHours = @DurationHours
+                            WHERE Id = @Id;";
 
-        var sessions = connection.Query<CodingSession>(query).ToList();
-
-        return sessions;
+        connection.Execute(updateQuery, session);
     }
 
     public static void DeleteSession(CodingSession session)
