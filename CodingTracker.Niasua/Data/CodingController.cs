@@ -2,6 +2,8 @@
 using Microsoft.Data.Sqlite;
 using CodingTracker.Niasua.Models;
 using CodingTracker.Niasua.Configuration;
+using System.ComponentModel.DataAnnotations;
+using CodingTracker.Niasua.UserInput;
 
 
 namespace CodingTracker.Niasua.Data;
@@ -101,6 +103,11 @@ internal static class CodingController
 
     public static List<CodingSession> FilterSessionPerPeriod(CodingSession session, string order)
     {
+        if (!UserInput.Validator.IsValidOrder(order))
+        {
+            throw new ArgumentException("Invalid order parameter. Must be 'ASC' or 'DESC'");
+        }
+
         using var connection = new SqliteConnection(AppConfig.GetConnectionString());
 
         var query = $@"

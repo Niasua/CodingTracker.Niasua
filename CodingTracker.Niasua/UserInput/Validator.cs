@@ -19,4 +19,9 @@ internal static class Validator
     {
         return int.TryParse(input, out id);
     }
+
+    public static bool IsValidOrder(string input)
+    {
+        return input.ToUpper() == "ASC" || input.ToUpper() == "DESC";
+    }
 }
