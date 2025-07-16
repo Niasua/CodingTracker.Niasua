@@ -25,6 +25,7 @@ while (!exit)
             "View all sessions",
             "Add new session",
             "Delete session",
+            "Update session",
             "Exit"
         }));
 
@@ -51,12 +52,46 @@ while (!exit)
 
             break;
 
+        case "Update session":
+
+            sessions = CodingController.GetAllSessions();
+            UpdateSession(sessions);
+
+            break;
+
         case "Exit":
 
             exit = true;
 
             break;
     }
+}
+
+void UpdateSession(List<CodingSession> sessions)
+{
+    TableDisplay.ShowSessions(sessions);
+
+    var id = UserInputHandler.GetSessionId();
+    var sessionToUpdate = CodingController.GetSessionById(id);
+
+    if (sessionToUpdate is null)
+    {
+        AnsiConsole.MarkupLine("[red]That session doesn't exist.[/]");
+        Pause();
+        return;
+    }
+
+    AnsiConsole.MarkupLine($"\nCurrent Start: [yellow]{sessionToUpdate.StartTime}[/]");
+    AnsiConsole.MarkupLine($"Current End: [yellow]{sessionToUpdate.EndTime}[/]");
+
+    var newStart = UserInputHandler.GetOptionalDateTime(sessionToUpdate.StartTime);
+
+    var newEnd = UserInputHandler.GetOptionalDateTime(sessionToUpdate.EndTime);
+
+    sessionToUpdate.StartTime = newStart;
+    sessionToUpdate.EndTime = newEnd;
+
+    CodingController.UpdateSession(sessionToUpdate);
 }
 
 static void ViewAllSessions(List<CodingSession> sessions)

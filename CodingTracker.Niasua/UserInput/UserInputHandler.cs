@@ -60,4 +60,20 @@ internal static class UserInputHandler
             AnsiConsole.MarkupLine($"\nPlease enter the start date and time ({DateTimeFormat}):");
         }
     }
+
+    public static DateTime GetOptionalDateTime(DateTime current)
+    {
+        Console.WriteLine($"Enter new date/time ({DateTimeFormat}) or press ENTER to keep current [{current.ToString(DateTimeFormat)}]:");
+        string input = Console.ReadLine();
+
+        if (string.IsNullOrWhiteSpace(input))
+            return current; 
+
+        if (Validator.IsValidDateTime(input, DateTimeFormat, out DateTime parsedDate))
+            return parsedDate;
+
+        Console.WriteLine("Invalid format, please try again.");
+        return GetOptionalDateTime(current);
+    }
+
 }
