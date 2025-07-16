@@ -26,6 +26,7 @@ while (!exit)
             "Add new session",
             "Delete session",
             "Update session",
+            "Start stopwatch session",
             "Exit"
         }));
 
@@ -59,12 +60,52 @@ while (!exit)
 
             break;
 
+        case "Start stopwatch session":
+
+            StopwatchSession();
+
+            break;
+
         case "Exit":
 
             exit = true;
 
             break;
     }
+}
+
+void StopwatchSession()
+{
+    AnsiConsole.MarkupLine("[blue]-- Stopwatch Session --[/]\n");
+
+    var start = DateTime.Now;
+
+    AnsiConsole.MarkupLine("[white]Tracking... Press any key to stop the session...[/]\n");
+
+    while (!Console.KeyAvailable)
+    {
+        var elapsed = DateTime.Now - start;
+
+        Console.SetCursorPosition(0, Console.CursorTop);
+        AnsiConsole.Markup($"\r[bold]Elapsed time:[/] [green]{elapsed:hh\\:mm\\:ss}[/]");
+
+        Thread.Sleep(1000);
+    }
+
+    Console.ReadKey(true);
+
+    var end = DateTime.Now;
+
+    AnsiConsole.MarkupLine("\n[green]Sessions correctly added.[/]");
+    Pause();
+
+    var session = new CodingSession
+    {
+        StartTime = start,
+        EndTime = end
+    };
+
+    CodingController.InsertSession(session);
 }
 
 void UpdateSession(List<CodingSession> sessions)
