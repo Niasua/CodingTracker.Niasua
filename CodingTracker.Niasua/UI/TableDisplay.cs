@@ -16,11 +16,13 @@ namespace CodingTracker.Niasua.UI
 
             foreach (var session in sessions)
             {
+                var duration = TimeSpan.FromHours(session.DurationHours);
+
                 table.AddRow(
                     session.Id.ToString(),
                     session.StartTime.ToString("dd-MM-yyyy HH:mm"),
                     session.EndTime.ToString("dd-MM-yyyy HH:mm"),
-                    session.DurationHours.ToString("0.##")
+                    duration.ToString(@"hh\:mm")
                     );
             }
 
@@ -36,8 +38,9 @@ namespace CodingTracker.Niasua.UI
 
             foreach (var summary in summaries)
             {
-                table.AddRow(summary.Period, summary.Sessions.ToString(), summary.AvgDuration.ToString("0.##"));
+                var duration = TimeSpan.FromHours(summary.AvgDuration);
 
+                table.AddRow(summary.Period, summary.Sessions.ToString(), duration.ToString(@"hh\:mm"));
             }
 
             AnsiConsole.Write(table);
