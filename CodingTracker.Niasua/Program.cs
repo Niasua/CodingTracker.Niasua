@@ -28,6 +28,7 @@ while (!exit)
             "Update session",
             "Start stopwatch session",
             "Filter coding records per period",
+            "Show summary report",
             "Exit"
         }));
 
@@ -73,6 +74,12 @@ while (!exit)
 
             break;
 
+        case "Show summary report":
+
+            TotalAndAverageReport();
+
+            break;
+
         case "Exit":
 
             exit = true;
@@ -103,6 +110,22 @@ void FilterPerPeriod()
     var sessions = CodingController.FilterSessionPerPeriod(session, order);
 
     TableDisplay.ShowSessions(sessions);
+
+    Pause();
+}
+
+void TotalAndAverageReport()
+{
+    AnsiConsole.MarkupLine("[blue]-- Total and Average Report--[/]\n");
+
+    var period = AnsiConsole.Prompt(
+        new SelectionPrompt<string>()
+            .Title("Choose the [green]period[/] to summarize by.")
+            .AddChoices(new[] { "Daily", "Weekly", "Monthly", "Yearly" }));
+
+    var summaries = CodingController.ShowSummaryReport(period);
+
+    TableDisplay.ShowSumaries(summaries);
 
     Pause();
 }

@@ -26,5 +26,21 @@ namespace CodingTracker.Niasua.UI
 
             AnsiConsole.Write(table);
         }
+        internal static void ShowSumaries(List<CodingSummary> summaries)
+        {
+            var table = new Table();
+            table.Border(TableBorder.Rounded);
+            table.AddColumn("[yellow]Period[/]");
+            table.AddColumn("[cyan]Sessions[/]");
+            table.AddColumn("[green]Avg Duration[/]");
+
+            foreach (var summary in summaries)
+            {
+                table.AddRow(summary.Period, summary.Sessions.ToString(), summary.AvgDuration.ToString("0.##"));
+
+            }
+
+            AnsiConsole.Write(table);
+        }
     }
 }

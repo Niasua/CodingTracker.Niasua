@@ -123,4 +123,48 @@ internal static class CodingController
 
         return connection.Query<CodingSession>(query, parameters).ToList();
     }
+
+    public static List<CodingSummary> ShowSummaryReport(string period)
+    {
+        using var connection = new SqliteConnection(AppConfig.GetConnectionString());
+
+        string groupBy;
+        string label;
+
+        switch (period.ToLower())
+        {
+            case "daily":
+                groupBy = "strftime('%Y-%m-%d', StartTime)";
+                label = "Date";
+                break;
+            case "weekly":
+                groupBy = "strftime('%Y-W%W', StartTime)";
+                label = "Week";
+                break;
+            case "monthly":
+                groupBy = "strftime('%Y-%m', StartTime)";
+                label = "Month";
+                break;
+            case "yearly":
+                groupBy = "strftime('%Y', StartTime)";
+                label = "Year";
+                break;
+            default:
+                throw new ArgumentException("Invalid period. Choose: daily, weekly, monthly or yearly.");
+        }
+
+        var query = $@"
+            SELECT
+                {groupBy} AS Period,
+                COUNT(*) AS Sessions,
+                ROUND(AVG(DurationHours), 2)AS AvgDuration
+            FROM coding_sessions
+            GROUP BY Period
+            ORDER BY Period ASC;
+        ";
+
+        var results = connection.Query<CodingSummary>(query).ToList();
+
+        return results;
+    }
 }
