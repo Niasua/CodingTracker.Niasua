@@ -27,6 +27,7 @@ while (!exit)
             "Delete session",
             "Update session",
             "Start stopwatch session",
+            "Filter coding records per period",
             "Exit"
         }));
 
@@ -66,12 +67,44 @@ while (!exit)
 
             break;
 
+        case "Filter coding records per period":
+
+            FilterPerPeriod();
+
+            break;
+
         case "Exit":
 
             exit = true;
 
             break;
     }
+}
+
+void FilterPerPeriod()
+{
+    AnsiConsole.MarkupLine("[blue]-- Filter Sessions --[/]\n");
+
+    AnsiConsole.MarkupLine("Write the [red]start and end[/] dates of the period\n");
+
+    var session = UserInputHandler.GetCodingSessionFromUser();
+
+    Console.WriteLine();
+
+    var order = AnsiConsole.Prompt(
+        new SelectionPrompt<string>()
+        .Title("Choose the filtering [green]order[/].")
+        .AddChoices(new[]
+        {
+            "ASC",
+            "DESC"
+        }));
+
+    var sessions = CodingController.FilterSessionPerPeriod(session, order);
+
+    TableDisplay.ShowSessions(sessions);
+
+    Pause();
 }
 
 void StopwatchSession()

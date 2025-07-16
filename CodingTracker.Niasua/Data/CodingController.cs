@@ -42,7 +42,14 @@ internal static class CodingController
         var insertQuery = @"INSERT INTO coding_sessions (StartTime, EndTime, DurationHours)
                             VALUES (@StartTime, @EndTime, @DurationHours);";
 
-        connection.Execute(insertQuery, session);
+        var parameters = new
+        {
+            StartTime = session.StartTime.ToString("yyyy-MM-dd HH:mm"),
+            EndTime = session.EndTime.ToString("yyyy-MM-dd HH:mm"),
+            session.DurationHours
+        };
+
+        connection.Execute(insertQuery, parameters);
     }
 
     public static void UpdateSession(CodingSession session)
@@ -58,7 +65,16 @@ internal static class CodingController
                                 DurationHours = @DurationHours
                             WHERE Id = @Id;";
 
-        connection.Execute(updateQuery, session);
+
+        var parameters = new
+        {
+            StartTime = session.StartTime.ToString("yyyy-MM-dd HH:mm"),
+            EndTime = session.EndTime.ToString("yyyy-MM-dd HH:mm"),
+            session.DurationHours,
+            session.Id
+        };
+
+        connection.Execute(updateQuery, parameters);
     }
 
     public static void DeleteSession(CodingSession session)
@@ -81,5 +97,23 @@ internal static class CodingController
         var session = connection.QuerySingleOrDefault<CodingSession>(query, new {Id = id});
 
         return session;
+    }
+
+    public static List<CodingSession> FilterSessionPerPeriod(CodingSession session, string order)
+    {
+        using var connection = new SqliteConnection(AppConfig.GetConnectionString());
+
+        var query = $@"
+                    SELECT * FROM coding_sessions
+                    WHERE StartTime >= @StartTime AND EndTime <= @EndTime
+                    ORDER BY StartTime {order}";
+
+        var parameters = new
+        {
+            StartTime = session.StartTime.ToString("yyyy-MM-dd HH:mm"),
+            EndTime = session.EndTime.ToString("yyyy-MM-dd HH:mm")
+        };
+
+        return connection.Query<CodingSession>(query, parameters).ToList();
     }
 }
