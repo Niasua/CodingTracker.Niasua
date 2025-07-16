@@ -99,6 +99,17 @@ internal static class CodingController
         connection.Execute(deleteQuery, session);
     }
 
+    public static void DeleteAll()
+    {
+        using var connection = new SqliteConnection(AppConfig.GetConnectionString());
+
+        var query = @"
+                        DELETE FROM coding_sessions  
+        ";
+
+        connection.Execute(query);
+    }
+
     public static CodingSession GetSessionById(int id)
     {
         using var connection = new SqliteConnection(AppConfig.GetConnectionString());

@@ -7,7 +7,8 @@ using SQLitePCL;
 
 Batteries.Init();
 
-CodingController.InitializeDatabase();
+CodingController.InitializeDatabases();
+DatabaseSeeder.Seed();
 
 bool exit = false;
 
@@ -25,10 +26,13 @@ while (!exit)
             "View all sessions",
             "Add new session",
             "Delete session",
+            "Delete all sessions",
             "Update session",
             "Start stopwatch session",
             "Filter coding records per period",
             "Show summary report",
+            "Set coding goal",
+            "Show goal progress",
             "Exit"
         }));
 
@@ -52,6 +56,12 @@ while (!exit)
 
             sessions = CodingController.GetAllSessions();
             DeleteSession(sessions);
+
+            break;
+
+        case "Delete all sessions":
+
+            DeleteAll();
 
             break;
 
@@ -80,12 +90,84 @@ while (!exit)
 
             break;
 
+        case "Set coding goal":
+
+            SetGoal();
+
+            break;
+
+        case "Show goal progress":
+
+            ShowGoalProgress();
+
+            break;
+
         case "Exit":
 
             exit = true;
 
             break;
     }
+}
+
+void DeleteAll()
+{
+    AnsiConsole.MarkupLine("[red]Are you sure you want to delete every session?[/]\n");
+
+    var answer = AnsiConsole.Prompt(
+        new SelectionPrompt<string>()
+        .Title("Choose an [red]option[/].")
+        .AddChoices(new[]
+        {
+            "Yes, I'm sure",
+            "No, i want to go back"
+        }));
+
+    if (answer == "Yes, I'm sure")
+    {
+        CodingController.DeleteAll();
+        AnsiConsole.MarkupLine("\n[red]All sessions successfully deleted.[/]");
+    }
+
+    Pause();
+}
+
+void ShowGoalProgress()
+{
+    CodingController.ShowGoalProgress();
+    Pause();
+}
+
+void SetGoal()
+{
+    AnsiConsole.MarkupLine("Enter your [red]target[/] coding hours: ");
+
+    if (!double.TryParse(Console.ReadLine(), out double targetHours) || targetHours <= 0)
+    {
+        AnsiConsole.MarkupLine("[red]Invalid input.[/]");
+        Pause();
+        return;
+    }
+
+    AnsiConsole.MarkupLine("Enter [green]Deadline[/] (dd-MM-yyyy)");
+
+    if (!DateTime.TryParseExact(Console.ReadLine(), "dd-MM-yyyy", null, System.Globalization.DateTimeStyles.None, out DateTime deadline))
+    {
+        AnsiConsole.MarkupLine("[red]Invalid date format.[/]");
+        Pause();
+        return;
+    }
+
+    var goal = new CodingGoal
+    {
+        TargetHours = targetHours,
+        Deadline = deadline
+    };
+
+    CodingController.InsertGoal(goal);
+
+    AnsiConsole.MarkupLine("[green]Goal saved successfully![/]");
+    Pause();
 }
 
 void FilterPerPeriod()
