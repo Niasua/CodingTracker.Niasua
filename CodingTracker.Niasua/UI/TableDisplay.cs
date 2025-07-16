@@ -18,8 +18,8 @@ namespace CodingTracker.Niasua.UI
             {
                 table.AddRow(
                     session.Id.ToString(),
-                    session.StartTime.ToString("dd-mm-yyyy HH:mm"),
-                    session.EndTime.ToString("dd-mm-yyyy HH:mm"),
+                    session.StartTime.ToString("dd-MM-yyyy HH:mm"),
+                    session.EndTime.ToString("dd-MM-yyyy HH:mm"),
                     session.DurationHours.ToString("0.##")
                     );
             }
