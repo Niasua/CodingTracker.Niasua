@@ -3,7 +3,7 @@ using System.Globalization;
 
 namespace CodingTracker.Niasua.UserInput;
 
-internal static class Validator
+public static class Validator
 {
     public static bool IsValidDateTime(string input, string format, out DateTime date)
     {
