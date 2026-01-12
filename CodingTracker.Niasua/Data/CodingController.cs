@@ -9,7 +9,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace CodingTracker.Niasua.Data;
 
-internal static class CodingController
+public static class CodingController
 {
     public static void InitializeDatabases()
     {

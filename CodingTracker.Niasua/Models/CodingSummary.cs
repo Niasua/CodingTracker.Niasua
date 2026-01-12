@@ -1,6 +1,6 @@
 ﻿namespace CodingTracker.Niasua.Models;
 
-internal class CodingSummary
+public class CodingSummary
 {
     public string Period { get; set; }
     public int Sessions { get; set; }

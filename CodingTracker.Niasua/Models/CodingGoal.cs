@@ -1,6 +1,6 @@
 ﻿namespace CodingTracker.Niasua.Models
 {
-    internal class CodingGoal
+    public class CodingGoal
     {
         public int Id { get; set; }
         public double TargetHours { get; set; }

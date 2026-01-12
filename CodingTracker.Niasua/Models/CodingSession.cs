@@ -1,6 +1,6 @@
 ﻿namespace CodingTracker.Niasua.Models;
 
-internal class CodingSession
+public class CodingSession
 {
     public int Id { get; set; }
     public DateTime StartTime { get; set; }

@@ -2,9 +2,10 @@
 
 namespace CodingTracker.Niasua.Configuration;
 
-internal static class AppConfig
+public static class AppConfig
 {
     private static IConfigurationRoot configuration;
+    public static string ConnectionString { get; set; } // this property is accessible from the test project
 
     static AppConfig()
     {
@@ -12,10 +13,12 @@ internal static class AppConfig
             .SetBasePath(Directory.GetCurrentDirectory())
             .AddJsonFile("appsettings.json")
             .Build();
+
+        ConnectionString = configuration.GetConnectionString("DefaultConnection");
     }
 
     public static string GetConnectionString()
     {
-        return configuration.GetConnectionString("DefaultConnection");
+        return ConnectionString;
     }
 }
